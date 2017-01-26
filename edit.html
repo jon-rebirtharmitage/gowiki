@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app>
 
 <head>
 
@@ -13,7 +13,8 @@
 
     <!-- Bootstrap Core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-
+	  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+  
     <!-- Custom CSS -->
     <link href="/css/basic.css" rel="stylesheet">
 
@@ -47,14 +48,25 @@
         <!-- Page Content -->
         <div id="page-content-wrapper">
             <div class="container-fluid">
-                <div class="row">
+                <div class="row" ng-controller="Note">
                     <div class="col-lg-12">
                       <h1>Editing {{.Title}}</h1>
 
-                      <form action="/save/{{.Title}}" method="POST">
-                      <div><textarea name="body" rows="20" cols="80">{{printf "%s" .Body}}</textarea></div>
-                        <div><input type="submit" value="Save"></div></form>
+                      <form>
+                      <div ng-repeat="item in items">
+                      <div><input type="text" name="dname" ng-model="item.dname"></div>
+												<div><select name="contentType" ng-model="item.contentType">
+													<option value=0>Text</option>
+													<option value=1>Image</option></select></div>
+													<div><textarea name="body" rows="5" cols="80" ng-model="item.content">{{.Body}}</textarea></div>					
+												</div>
+                      <button ng-click="add()" class="btn btn-primary buffered">Add Node</button><button ng-click="res()" class="btn btn-primary buffered" type="submit">Save</button></form>
+												</div>
                     </div>
+							</div>
+                      
+                      
+                      
                 </div>
             </div>
         </div>
@@ -76,6 +88,43 @@
         $("#wrapper").toggleClass("toggled");
     });
     </script>
+      
+    <script type="text/javascript">
+        var Note = function($scope) {
+          $scope.items = [];
+          $scope.add = function() {
+            if ($scope.items.length < 4) {
+              $scope.items.push({
+                dname: "",
+                contentType: "",
+                content: ""
+              });
+            } else {
+              alert("Too many targets.")
+            }
+          }
+
+          $scope.res = function() {
+						for (var i = 0; i < $scope.items.length; i++){
+							var d = {
+								'uid':0,
+								'title':$scope.items[i].dname,
+								'contentType':$scope.items[i].contentType,
+								'content': $scope.items[i].content,
+								'tags' :[{{.Title}}],
+								'synapse' :[]
+							};
+							d = JSON.stringify(d);
+							$.post(("http://wiki.rebirtharmitage.com:8085/process/"), d, function(data, status) {
+								if ($scope.items.length == i++){
+									window.location.replace("http://wiki.rebirtharmitage.com:8085/view/" + {{.Title}});
+								}
+							});	
+						}
+          }
+        }
+      </script>
+
 
 </body>
 

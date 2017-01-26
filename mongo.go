@@ -18,26 +18,29 @@ type MOGValue struct {
 	Title string
 }
 
-func mongo_insert(moaddress MOAddr, movalue MOValue) bool{
+func mongo_insert(moaddress MOAddr, t neuron) bool{
   session, err := mgo.Dial(moaddress.session)
   if err != nil {
     return false
   }
   defer session.Close()
   c := session.DB(moaddress.table).C(moaddress.doc)
-  c.Insert(bson.M{"title": movalue.Title, "body": movalue.Body})
-  return true
+  c.Insert(t)
+	if err != nil{
+		return false
+	}
+	return true
 }
 
-func mongo_export(moaddress MOAddr, mogvalue MOGValue) []MOValue {
+func mongo_export(moaddress MOAddr, t neuron) []neuron {
 	session, err := mgo.Dial(moaddress.session)
 	if err != nil {
 			panic(err)
 	}
 	defer session.Close()
 	c := session.DB(moaddress.table).C(moaddress.doc)
-	result := []MOValue{}
-	iter := c.Find(bson.M{"title": mogvalue.Title}).Iter()
+	result := []neuron{}
+	iter := c.Find(bson.M{"title": t.Title}).Iter()
 	err = iter.All(&result)
 	if err != nil {
 			log.Fatal(err)
@@ -45,13 +48,13 @@ func mongo_export(moaddress MOAddr, mogvalue MOGValue) []MOValue {
 	return result
 }
 
-func mongo_update(moaddress MOAddr, movalue MOValue) bool{
+func mongo_update(moaddress MOAddr, t neuron) bool{
   session, err := mgo.Dial(moaddress.session)
   if err != nil {
     return false
   }
   defer session.Close()
   c := session.DB(moaddress.table).C(moaddress.doc)
-  c.Update(bson.M{"title": movalue.Title}, bson.M{"title": movalue.Title, "body": movalue.Body})
+  c.Update(bson.M{"title": t.Title}, t)
   return true
 }
