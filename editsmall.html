@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, shrink-to-fit=no, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Simple Sidebar - Start Bootstrap Template</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+	  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+  
+    <!-- Custom CSS -->
+    <link href="/css/basic.css" rel="stylesheet">
+	
+		  <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script> <script type="text/javascript">
+		//<![CDATA[
+        bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
+		//]]>
+  </script>
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        Start Bootstrap
+                    </a>
+                </li>
+                <li>
+                    <a href="#">Dashboard</a>
+                </li>
+                <li>
+                    <a href="#">Site Map</a>
+                </li>
+                <li>
+                    <a href="#">Management</a>
+                </li>
+              	<li>
+								</li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <h1>Editing : {{.Title}}</h1>
+                      <form name="form" id="form">
+                      <div>
+												
+												</div>
+                        {{range .Nuerons}}
+                      <div><input type="text" name="dname" value="{{.Title}}"><div>
+												<div><select name="contentType" value={{.ContentType}} ng-model="item.contentType">
+													<option value=0>Text</option>
+													<option value=1>Image</option></select></div>
+													<div><textarea id="content" name="content" rows="5" cols="80" ng-model="item.content">{{.Content}}</textarea></div>
+													 <input type="hidden" name="parent" value="{{.Parent}}">
+													<button onclick="res()" class="btn btn-primary buffered" type="submit">Save</button>
+												</div>
+											</div>
+                      {{end}}
+                      </form>
+										</div>
+                  </div>
+							</div>
+                      
+                      
+                      
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/js/bootstrap.min.js"></script>
+
+      
+    <script type="text/javascript">
+			res = function() {
+				var c = $('form').serializeArray();
+				var d = {
+						'uid':{{.Uid}},
+						'title': c[0].value,
+						'parent':c[3].value,
+						'contentType': c[1].value,
+						'content': nicEditors.findEditor('content').getContent(),
+						'tags' :[c[0].value],
+						'synapse' :[]
+				}
+				d = JSON.stringify(d);
+				$.post(("http://wiki.rebirtharmitage.com:8085/subprocess/"), d, function(data, status) {
+							window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + c[3].value);
+				});	
+			}
+      </script>
+</body>
+
+</html>

@@ -1,25 +1,32 @@
 package main
 
-// type neuron struct{
-//   uid int
-//   title string
-//   neuros []neuro
-// }
+import (
+	"html/template"
+)
 
-// type neuro struct {
-//   uid, contentType int
-//   title, content string
-//   dendrites []dendrite
-// }
+type MOAddr struct {
+  session, table, doc string
+}
 
-// type dendrite struct {
-//   uid, count, backlinkCount int 
-//   synapse []int
-// }
+type MOValue struct {
+  Title, Body string
+}
+
+type MOGValue struct {
+	Title string
+}
 
 type neuron struct{
   Uid, ContentType int
-  Title, Content string
+  Title, Parent string
+	Content template.HTML
   Tags []string
+  Synapse []int
+}
+
+type axion struct{
+  Title string
+	Uid int
+	Static int
   Synapse []int
 }

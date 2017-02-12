@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Simple Sidebar - Start Bootstrap Template</title>
+    <title>Go-Wiki Golang Based Wiki</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -17,6 +17,12 @@
   
     <!-- Custom CSS -->
     <link href="/css/basic.css" rel="stylesheet">
+	
+	  <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script> <script type="text/javascript">
+		//<![CDATA[
+        bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
+		//]]>
+  </script>
 
 </head>
 
@@ -24,12 +30,11 @@
 
     <div id="wrapper">
 
-        <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
                 <li class="sidebar-brand">
                     <a href="#">
-                        Start Bootstrap
+                        Go-Wiki A Golang Wiki
                     </a>
                 </li>
                 <li>
@@ -41,28 +46,38 @@
                 <li>
                     <a href="#">Management</a>
                 </li>
+              	<li>
+										<h3>
+											Search	
+										</h3>
+										<form name="searchform" id="searchform">
+												<div>
+                          <input type="text" name="searchtitle" id="searchtitle">
+													<button onclick="searchthis()" class="btn btn-primary buffered" type="reset">Search</button>
+												</div>
+										</form>
+								</li>
             </ul>
         </div>
-        <!-- /#sidebar-wrapper -->
 
-        <!-- Page Content -->
         <div id="page-content-wrapper">
             <div class="container-fluid">
                 <div class="row" ng-controller="Note">
                     <div class="col-lg-12">
-                      <h1>Editing {{.Title}}</h1>
-
+                      <h1>Editing : {{.Title}}</h1>
                       <form>
                       <div ng-repeat="item in items">
                       <div><input type="text" name="dname" ng-model="item.dname"></div>
 												<div><select name="contentType" ng-model="item.contentType">
 													<option value=0>Text</option>
-													<option value=1>Image</option></select></div>
-													<div><textarea name="body" rows="5" cols="80" ng-model="item.content">{{.Body}}</textarea></div>					
+													<option value=1>Image</option></select>
 												</div>
+													<div><textarea name="content" rows="5" cols="80" ng-model="item.content"></textarea></div>					
+												</div>
+											</div>
                       <button ng-click="add()" class="btn btn-primary buffered">Add Node</button><button ng-click="res()" class="btn btn-primary buffered" type="submit">Save</button></form>
-												</div>
-                    </div>
+										</div>
+                  </div>
 							</div>
                       
                       
@@ -70,25 +85,21 @@
                 </div>
             </div>
         </div>
-        <!-- /#page-content-wrapper -->
-
     </div>
-    <!-- /#wrapper -->
 
     <!-- jQuery -->
     <script src="/js/jquery.js"></script>
-
     <!-- Bootstrap Core JavaScript -->
     <script src="/js/bootstrap.min.js"></script>
 
-    <!-- Menu Toggle Script -->
-    <script>
-    $("#menu-toggle").click(function(e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    });
-    </script>
-      
+		<script type="text/javascript">
+       function searchthis(){    
+					var a = $('#searchtitle').val();
+				 	var url = "http://wiki.rebirtharmitage.com:8085/view/" + a;
+				  window.location.href = url;
+				}
+		</script>
+
     <script type="text/javascript">
         var Note = function($scope) {
           $scope.items = [];
@@ -99,16 +110,19 @@
                 contentType: "",
                 content: ""
               });
+							
             } else {
               alert("Too many targets.")
             }
           }
+				
 
           $scope.res = function() {
 						for (var i = 0; i < $scope.items.length; i++){
 							var d = {
-								'uid':0,
+								'uid':{{.Uid}},
 								'title':$scope.items[i].dname,
+								'parent':{{.Title}},
 								'contentType':$scope.items[i].contentType,
 								'content': $scope.items[i].content,
 								'tags' :[{{.Title}}],
@@ -116,7 +130,7 @@
 							};
 							d = JSON.stringify(d);
 							$.post(("http://wiki.rebirtharmitage.com:8085/process/"), d, function(data, status) {
-								if ($scope.items.length == i++){
+								if ($scope.items.length == i){
 									window.location.replace("http://wiki.rebirtharmitage.com:8085/view/" + {{.Title}});
 								}
 							});	
@@ -124,8 +138,5 @@
           }
         }
       </script>
-
-
-</body>
-
+	</body>
 </html>
