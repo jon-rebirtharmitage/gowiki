@@ -115,12 +115,12 @@
               alert("Too many targets.")
             }
           }
-				
 
           $scope.res = function() {
 						for (var i = 0; i < $scope.items.length; i++){
+							var a = {{.Uid}} + i;
 							var d = {
-								'uid':{{.Uid}},
+								'uid': a,
 								'title':$scope.items[i].dname,
 								'parent':{{.Title}},
 								'contentType':$scope.items[i].contentType,
@@ -128,14 +128,11 @@
 								'tags' :[{{.Title}}],
 								'synapse' :[]
 							};
-							d = JSON.stringify(d);
-							$.post(("http://wiki.rebirtharmitage.com:8085/process/"), d, function(data, status) {
-								if ($scope.items.length == i){
-									window.location.replace("http://wiki.rebirtharmitage.com:8085/view/" + {{.Title}});
-								}
-							});	
+							d = JSON.stringify(d); 
+							$.ajax({url: "http://wiki.rebirtharmitage.com:8085/process/", type: 'POST', data:d, async:false, success: function(data, result){}});
 						}
-          }
+						window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + {{.Title}});
+					}
         }
       </script>
 	</body>
