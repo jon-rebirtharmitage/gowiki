@@ -9,87 +9,94 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Go-Wiki Golang Based Wiki</title>
+    <title>Gokuwiki : {{.Title}}</title>
+		<link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
 
-    <!-- Bootstrap Core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-	  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
-  
-    <!-- Custom CSS -->
     <link href="/css/basic.css" rel="stylesheet">
 	
-	  <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script> <script type="text/javascript">
-		//<![CDATA[
-        bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
-		//]]>
-  </script>
+<!-- 		<script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script> <script type="text/javascript">
+			bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
+		</script> -->
+	
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
 
 </head>
 
 <body>
 
-    <div id="wrapper">
-
-        <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand">
-                    <a href="#">
-                        Go-Wiki A Golang Wiki
-                    </a>
-                </li>
-                <li>
-                    <a href="#">Dashboard</a>
-                </li>
-                <li>
-                    <a href="#">Site Map</a>
-                </li>
-                <li>
-                    <a href="#">Management</a>
-                </li>
-              	<li>
-										<h3>
-											Search	
-										</h3>
-										<form name="searchform" id="searchform">
-												<div>
-                          <input type="text" name="searchtitle" id="searchtitle">
-													<button onclick="searchthis()" class="btn btn-primary buffered" type="reset">Search</button>
-												</div>
-										</form>
-								</li>
-            </ul>
-        </div>
-
-        <div id="page-content-wrapper">
-            <div class="container-fluid">
-                <div class="row" ng-controller="Note">
-                    <div class="col-lg-12">
-                      <h1>Editing : {{.Title}}</h1>
-                      <form>
-                      <div ng-repeat="item in items">
-                      <div><input type="text" name="dname" ng-model="item.dname"></div>
-												<div><select name="contentType" ng-model="item.contentType">
-													<option value=0>Text</option>
-													<option value=1>Image</option></select>
-												</div>
-													<div><textarea name="content" rows="5" cols="80" ng-model="item.content"></textarea></div>					
-												</div>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+								<div>
+									 <a class="navbar-brand" href="#">GokuWiki</a>
+								</div>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#">Home</a>
+                    </li>
+                    <li>
+                        <a href="#">Management</a>
+                    </li>
+                    <li>
+                        <a href="#">Support</a>
+                    </li>
+                </ul>
+								<ul class="nav navbar-nav navbar-right">
+										<li>
+											<div class="vcenter">
+												<form name="searchform" id="searchform">
+													<input type="text" name="searchtitle" id="searchtitle">
+													<button onclick="searchthis()" class="btn btn-primary buffered " type="reset">Search</button>
+												</form>
 											</div>
-                      <button ng-click="add()" class="btn btn-primary buffered">Add Node</button><button ng-click="res()" class="btn btn-primary buffered" type="submit">Save</button></form>
-										</div>
-                  </div>
-							</div>
-                      
-                      
-                      
-                </div>
+									</li>
+								</ul>
             </div>
         </div>
-    </div>
+    </nav>
+<div class="edit-container">		
+		<div class="container">
+			<div class="row" ng-controller="Note">
+				<div class="col-lg-12">
+					<h1>Editing : {{.Title}}</h1>
+					<form>
+						<div ng-repeat="item in items">
+						<div>
+							<h4>
+								Node Title
+							</h4>	
+						</div>
+						<div><input type="text" name="dname" ng-model="item.dname"></div>
+						<div>
+							<h4>
+								Node Content
+							</h4>	
+						</div>
+						<div><textarea name="content" class="boxsizingBorder" placeholder="Node Content" ng-model="item.content"></textarea></div>	
+						<div>
+							<hr>
+						</div>
+						</div>
+						<button ng-click="add()" class="btn btn-primary buffered">Add Node</button><button ng-click="res()" class="btn btn-primary buffered" type="submit">Save</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <!-- jQuery -->
     <script src="/js/jquery.js"></script>
-    <!-- Bootstrap Core JavaScript -->
+
     <script src="/js/bootstrap.min.js"></script>
 
 		<script type="text/javascript">
@@ -107,10 +114,9 @@
             if ($scope.items.length < 4) {
               $scope.items.push({
                 dname: "",
-                contentType: "",
                 content: ""
               });
-							
+							var ct = new nicEditor({fullPanel : true}).panelInstance('content');
             } else {
               alert("Too many targets.")
             }
@@ -136,4 +142,5 @@
         }
       </script>
 	</body>
+
 </html>

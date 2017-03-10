@@ -18,7 +18,7 @@
     <!-- Custom CSS -->
     <link href="/css/basic.css" rel="stylesheet">
 	
-		  <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script> <script type="text/javascript">
+ <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script> <script type="text/javascript">
 		//<![CDATA[
         bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
 		//]]>
@@ -28,47 +28,59 @@
 
 <body>
 
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand">
-                    <a href="#">
-                        Start Bootstrap
-                    </a>
-                </li>
-                <li>
-                    <a href="#">Dashboard</a>
-                </li>
-                <li>
-                    <a href="#">Site Map</a>
-                </li>
-                <li>
-                    <a href="#">Management</a>
-                </li>
-              	<li>
-								</li>
-            </ul>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+								<div>
+									 <a class="navbar-brand" href="#">GokuWiki</a>
+								</div>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#">Home</a>
+                    </li>
+                    <li>
+                        <a href="#">Management</a>
+                    </li>
+                    <li>
+                        <a href="#">Support</a>
+                    </li>
+                </ul>
+								<ul class="nav navbar-nav navbar-right">
+										<li>
+											<div class="vcenter">
+												<form name="searchform" id="searchform">
+													<input type="text" name="searchtitle" id="searchtitle">
+													<button onclick="searchthis()" class="btn btn-primary buffered " type="reset">Search</button>
+												</form>
+											</div>
+									</li>
+								</ul>
+            </div>
         </div>
-        <!-- /#sidebar-wrapper -->
+    </nav>
 
         <!-- Page Content -->
-        <div id="page-content-wrapper">
-            <div class="container-fluid">
+        <div class="edit-container">
+            <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
                       <h1>Editing : {{.Title}}</h1>
                       <form name="form" id="form">
                       <div>
-												
 												</div>
                         {{range .Nuerons}}
-                      <div><input type="text" name="dname" value="{{.Title}}"><div>
-												<div><select name="contentType" value={{.ContentType}} ng-model="item.contentType">
-													<option value=0>Text</option>
-													<option value=1>Image</option></select></div>
-													<div><textarea id="content" name="content" rows="5" cols="80" ng-model="item.content">{{.Content}}</textarea></div>
+                      	<div><input type="text" name="dname" value="{{.Title}}"><div>
+													<div><textarea id="content" name="content" class="boxsizingBorder" ng-model="item.content">{{.Content}}</textarea></div>
 													 <input type="hidden" name="parent" value="{{.Parent}}">
 													<button onclick="res()" class="btn btn-primary buffered" type="submit">Save</button>
 												</div>
@@ -101,11 +113,11 @@
 				var c = $('form').serializeArray();
 				var d = {
 						'uid':{{.Uid}},
-						'title': c[0].value,
+						'title': c[1].value,
 						'parent':c[3].value,
-						'contentType': c[1].value,
+						'contentType': 0,
 						'content': nicEditors.findEditor('content').getContent(),
-						'tags' :[c[0].value],
+						'tags' :[c[1].value],
 						'synapse' :[]
 				}
 				d = JSON.stringify(d);

@@ -18,7 +18,7 @@ type MOGValue struct {
 
 type neuron struct{
   Uid, ContentType int
-  Title, Parent string
+  Title, Ctitle, Parent string
 	Content template.HTML
   Tags []string
   Synapse []int

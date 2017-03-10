@@ -9,19 +9,23 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Simple Sidebar - Start Bootstrap Template</title>
-
-    <!-- Bootstrap Core CSS -->
+    <title>Gokuwiki : {{.Title}}</title>
+		<link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
     <link href="/css/basic.css" rel="stylesheet">
-
+	
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+	 <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script> <script type="text/javascript">
+			//<![CDATA[
+					bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
+			//]]>
+		</script>
 </head>
 
 <body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -31,32 +35,37 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Start Bootstrap</a>
+								<div>
+									 <a class="navbar-brand" href="#">GokuWiki</a>
+								</div>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="#">About</a>
+                        <a href="#">Home</a>
                     </li>
                     <li>
-                        <a href="#">Services</a>
+                        <a href="#">Management</a>
                     </li>
                     <li>
-                        <a href="#">Contact</a>
+                        <a href="#">Support</a>
                     </li>
-										<li class="vcenter">
-											<form name="searchform" id="searchform">
-														<input type="text" name="searchtitle" id="searchtitle">
-														<button onclick="searchthis()" class="btn btn-primary buffered" type="reset">Search</button>
-											</form>
-									</li>
                 </ul>
+								<ul class="nav navbar-nav navbar-right">
+										<li>
+											<div class="vcenter">
+												<form name="searchform" id="searchform">
+													<input type="text" name="searchtitle" id="searchtitle">
+													<button onclick="searchthis()" class="btn btn-primary buffered " type="reset">Search</button>
+												</form>
+											</div>
+									</li>
+								</ul>
             </div>
-            <!-- /.navbar-collapse -->
         </div>
-        <!-- /.container -->
     </nav>
+
 
 <div class="container">
 
@@ -68,14 +77,14 @@
                 </h1>
             </div>
 					{{range .Nuerons}}
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h4><i class="fa fa-fw fa-check"></i>{{.Title}}</h4>
+                        <h2><i class="fa fa-fw fa-check"></i>{{.Title}}</h2>
                     </div>
                     <div class="panel-body">
                         <p>{{.Content}}</p>
-                        <a href="/editsmall/{{.Uid}}" class="btn btn-default">Learn More</a>
+                        <a href="/editsmall/{{.Uid}}" class="btn btn-default">Edit</a>
                     </div>
                 </div>
             </div>

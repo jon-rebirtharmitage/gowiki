@@ -8,11 +8,37 @@
   margin-top: 20px;
 }
 
-#vcenter {
+.edit-container {
+  margin-top: 50px;
+}
+
+.boxsizingBorder {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    width:100%;
+}
+
+#searchtitle{
+  height: 32px;
+}
+
+.navbar .navbar-nav {
     display: inline-block;
+    float: none;
+}
+
+.navbar .navbar-collapse {
+    text-align: center;
+}
+
+.vcenter {
+    height:55px;
+    display:table-cell;
     vertical-align: middle;
     float: none;
 }
+
 
 #wrapper {
     padding-left: 0;

@@ -88,7 +88,9 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 }
 
 func Save(w http.ResponseWriter, r *http.Request) {
+	//Allows the call to the RESTFUL API to come from across domains
 	w.Header().Set("Access-Control-Allow- Origin", "*") 
+	//Configures addr information 
 	moaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "manifold"}
 	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "paradox"}
 	body, _ := ioutil.ReadAll(r.Body)
@@ -102,6 +104,7 @@ func Save(w http.ResponseWriter, r *http.Request) {
 	mongo_init(moaddr, axion{t.Tags[0], g.Uid, 0, g.Synapse})
 	t.Uid = (f.Uid + 1)
 	t.Synapse = append(t.Synapse, t.Uid)
+	
 	mongo_insert(noaddr, t)
 }
 
