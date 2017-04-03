@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app>
 
 <head>
 
@@ -9,17 +9,13 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Gokuwiki : {{.Title}}</title>
+    <title>Gokuwiki : {{.Ctitle}}</title>
 		<link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/basic.css" rel="stylesheet">
 	
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
-	 <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script> <script type="text/javascript">
-			//<![CDATA[
-					bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
-			//]]>
-		</script>
+
 </head>
 
 <body>
@@ -73,7 +69,7 @@
         <div class="row" id="container">
             <div class="col-lg-12">
                 <h1 class="page-header">
-                    {{.Title}}
+                    {{.Ctitle}}
                 </h1>
             </div>
 					{{range .Nuerons}}
@@ -91,6 +87,66 @@
 					{{end}}
         </div>
 	</div>
+	
+<div class="edit-container">		
+		<div class="container">
+			<div class="row" ng-controller="Note">
+				<div class="col-lg-12">
+					<div class="col-lg-12">
+					<h1>Editing : {{.Ctitle}}</h1><button ng-click="res()" class="btn btn-primary buffered" type="submit">Save</button>		
+					</div>
+					<form><div class="col-md-4">
+						<div ng-repeat="node in nodes">
+						<div>
+							<h4>
+								Node Title
+							</h4>	
+						</div>
+						<div><input type="text" name="aname" ng-model="node.aname"></div>
+							<hr>
+						</div>
+					<div class="text-right">
+						<button ng-click="adda()" class="btn btn-primary buffered">Add Node</button>
+					</div>
+						</div>
+					<div class="col-md-4">
+						<div ng-repeat="tag in tags">
+						<div>
+							<h4>
+								Tag
+							</h4>	
+						</div>
+						<div><input type="text" name="bname" ng-model="tag.bname"></div>
+							<hr>
+						</div>
+						<div class="text-right">
+						<button ng-click="addb()" class="btn btn-primary buffered">Add Tag</button>
+					</div>
+				</div>
+			</form><form>
+						<div class="col-md-4">
+							<form>
+							<div ng-repeat="synapse in synapses">
+							<div>
+								<h4>
+									Synapse
+								</h4>	
+							</div>
+							<div><input type="text" name="cname" ng-model="synapse.cname"></div>
+								<hr>
+							</div>
+							<div class="text-right">
+							<button ng-click="addc()" class="btn btn-primary buffered">Add Synapse</button>
+						</div>
+					</div>
+						</form></div>
+				</div>
+				<div>
+					
+				</div>
+			</div>
+		</div> 
+	</div>
         <!-- Page Content -->
 
         <!-- /#page-content-wrapper -->
@@ -107,10 +163,86 @@
 		<script type="text/javascript">
        function searchthis(){    
 					var a = $('#searchtitle').val();
-				 	var url = "http://wiki.rebirtharmitage.com:8085/view/" + a;
-				  window.location.href = url;
+					var d = {
+						'searchterms': a,
+						'searchables': []
+					};
+					d = JSON.stringify(d); 
+					$.ajax({
+									url: "http://wiki.rebirtharmitage.com:8085/search/", 
+									type: 'POST', 
+									data:d,
+									dataType: 'json',
+									async:false, 
+									success: function(data, result){
+										window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + data.title);
+									},
+									error: function(data, result){
+										alert("$(result)");
+									}});
 				}
 		</script>
+	
+	<script type="text/javascript">
+        var Note = function($scope) {
+          $scope.nodes = [];
+          $scope.adda = function() {
+            if ($scope.nodes.length < 8) {
+              $scope.nodes.push({
+                aname: "",
+                content: ""
+              });
+            } else {
+              alert("Too many targets.")
+            }
+          }
+					
+					$scope.tags = [];
+          $scope.addb = function() {
+            if ($scope.tags.length < 8) {
+              $scope.tags.push({
+                bname: "",
+                content: ""
+              });
+            } else {
+              alert("Too many targets.")
+            }
+          }
+					
+					$scope.synapses = [];
+          $scope.addc = function() {
+            if ($scope.synapses.length < 8) {
+              $scope.synapses.push({
+                cname: "",
+                content: ""
+              });
+            } else {
+              alert("Too many targets.")
+            }
+          }
+
+          $scope.res = function() {
+						for (var i = 0; i < $scope.nodes.length; i++){
+							var a = {{.Uid}} + i;
+							var d = {
+								'uid': a,
+								'title':$scope.nodes[i].aname,
+								'ctitle':{{.Ctitle}},
+								'parent':{{.Title}},
+								'contentType':$scope.nodes[i].contentType,
+								'content': $scope.nodes[i].content,
+								'tags' :[{{.Title}}],
+								'synapse' :[]
+							};
+							d = JSON.stringify(d); 
+							$.ajax({url: "http://wiki.rebirtharmitage.com:8085/process/", type: 'POST', data:d, async:false, success: function(data, result){}});
+						}
+						window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + {{.Title}});
+					}
+					
+					
+        }
+      </script>
 
 </body>
 

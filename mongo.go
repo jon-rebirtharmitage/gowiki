@@ -94,6 +94,36 @@ func mongo_find(moaddress MOAddr, f string) axion {
 	return result
 }
 
+func mongo_truefind(moaddress MOAddr, f string) axion {
+	session, err := mgo.Dial(moaddress.session)
+	if err != nil {
+			panic(err)
+	}
+	defer session.Close()
+	c := session.DB(moaddress.table).C(moaddress.doc)
+	result := axion{}
+	erro := c.Find(bson.M{"ctitle": f}).One(&result)
+	if erro != nil {
+			return result
+	}
+	return result
+}
+
+func mongo_seekfind(moaddress MOAddr, f string) []axion {
+	session, err := mgo.Dial(moaddress.session)
+	if err != nil {
+			panic(err)
+	}
+	defer session.Close()
+	c := session.DB(moaddress.table).C(moaddress.doc)
+	result := []axion{}
+	erro := c.Find(bson.M{"ctitle": bson.RegEx{f, ""}}).All(&result)
+	if erro != nil {
+			return result
+	}
+	return result
+}
+
 func mongo_locate(moaddress MOAddr, f int) []neuron {
 	session, err := mgo.Dial(moaddress.session)
 	if err != nil {

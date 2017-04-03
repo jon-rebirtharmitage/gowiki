@@ -3,7 +3,7 @@ package main
 import (
 	"html/template"
 	"net/http"
-	"errors"
+//	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -14,42 +14,36 @@ import (
 
 type Page struct{
 	Title string
+	Ctitle string
 	Uid int
 	Static int
 	Nuerons []neuron
 }
 
 func loadPage(title string) (*Page, error) {
-	moaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "manifold"}
-	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "paradox"}
+	moaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "pantheon"}
+	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "hades"}
 	a := mongo_find(moaddr, title)
-	if a.Title == "" {
-		c := []neuron{}
-		f := mongo_find(moaddr, "INDEX")
-		mongo_init(moaddr, axion{"INDEX", (f.Uid+1), 0, nil})
-		mongo_insertAxion(moaddr, axion{strings.ToLower(title), (f.Uid+1), 0, nil})
-		return &Page{title, (f.Uid+1), 0, c}, errors.New("Need to create this page it does not exist.")
-	}
 	c := []neuron{}
 	for i := range a.Synapse{
 		c = append(c, mongo_export(noaddr, a.Synapse[i]))
 	}
-	//c := mongo_multiexport(noaddr, a.Uid)
-	return &Page{title, a.Uid, 0, c}, nil
+	fmt.Println(a.Ctitle)
+	return &Page{title, a.Ctitle, a.Uid, 0, c}, nil
 }
 
 func loadParadox(uid string) (*Page, error) {
-	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "paradox"}
+	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "hades"}
 	u, _ := strconv.Atoi(uid)
 	a := mongo_locate(noaddr, u)
 	fmt.Println(a)
-	return &Page{a[0].Title, a[0].Uid, 0, a}, nil
+	return &Page{"", a[0].Title, a[0].Uid, 0, a}, nil
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p, err := loadPage(title)
 	if err != nil {
-		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
+		http.Redirect(w, r, "/edit/" + title, http.StatusFound)
 		return
 	}
 	renderTemplate(w, "view", p)
@@ -91,26 +85,25 @@ func Save(w http.ResponseWriter, r *http.Request) {
 	//Allows the call to the RESTFUL API to come from across domains
 	w.Header().Set("Access-Control-Allow- Origin", "*") 
 	//Configures addr information 
-	moaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "manifold"}
-	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "paradox"}
+	moaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "pantheon"}
+	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "hades"}
 	body, _ := ioutil.ReadAll(r.Body)
 	var jsonData = []byte(body)
 	var t neuron
 	json.Unmarshal(jsonData, &t)
 	f := mongo_find(moaddr, "LINDEX")
-	mongo_init(moaddr, axion{"LINDEX", (f.Uid+1), 0, nil})
+	mongo_init(moaddr, axion{"LINDEX", "", (f.Uid+1), 0, nil})
 	g := mongo_find(moaddr, t.Tags[0])
 	g.Synapse = append(g.Synapse, (f.Uid+1))
-	mongo_init(moaddr, axion{t.Tags[0], g.Uid, 0, g.Synapse})
+	mongo_init(moaddr, axion{t.Tags[0], t.Ctitle,  g.Uid, 0, g.Synapse})
 	t.Uid = (f.Uid + 1)
 	t.Synapse = append(t.Synapse, t.Uid)
-	
 	mongo_insert(noaddr, t)
 }
 
 func SmallSave(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow- Origin", "*") 
-	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "paradox"}
+	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "hades"}
 	body, _ := ioutil.ReadAll(r.Body)
 	var jsonData = []byte(body)
 	var t neuron
@@ -118,6 +111,43 @@ func SmallSave(w http.ResponseWriter, r *http.Request) {
 	mongo_update(noaddr, t)
 }
 
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow- Origin", "*") 
+	w.Header().Set("Content-Type", "application/json")
+	body, _ := ioutil.ReadAll(r.Body)
+	var jsonData = []byte(body)
+	var t search
+	json.Unmarshal(jsonData, &t)
+	moaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "pantheon"}
+	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "hades"}
+	t.Searchterms = strings.ToLower(t.Searchterms)
+	t.Searchables = strings.Split(t.Searchterms, " ")
+	g := []axion{}
+	h := []axion{}
+	for i := range t.Searchables{
+		h = mongo_seekfind(moaddr, string(t.Searchables[i]))
+		for j := range h {
+			g = append(g, h[j])
+		}
+	}
+	fmt.Println(t.Searchterms)
+	if len(g) == 0 {
+		f := mongo_find(moaddr, "INDEX")
+		j := CreateSessionID()
+		mongo_init(moaddr, axion{"INDEX", "", (f.Uid+1), 0, nil})
+		k := axion{j, strings.ToLower(t.Searchterms), (f.Uid+1), 0, nil}
+		mongo_insertAxion(moaddr, k)
+		js, _ := json.Marshal(k)
+		w.Write(js)
+	}else{
+		c := []neuron{}
+		for i := range g[0].Synapse{
+			c = append(c, mongo_export(noaddr, g[0].Synapse[i]))
+		}
+		js, _ := json.Marshal(g[0])
+		w.Write(js)
+	}
+}
 
 func forwardHandler(w http.ResponseWriter, r *http.Request){
 	a := strings.Split(r.URL.String(), "/")
@@ -132,6 +162,7 @@ func main() {
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/editsmall/", makeHandler(editsmallHandler))
+	http.HandleFunc("/search/", searchHandler)
 	http.HandleFunc("/process/", Save)
 	http.HandleFunc("/subprocess/", SmallSave)
 	http.HandleFunc("/", forwardHandler)

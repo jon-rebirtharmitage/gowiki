@@ -18,12 +18,6 @@
     <!-- Custom CSS -->
     <link href="/css/basic.css" rel="stylesheet">
 	
- <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script> <script type="text/javascript">
-		//<![CDATA[
-        bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
-		//]]>
-  </script>
-
 </head>
 
 <body>
@@ -107,6 +101,28 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="/js/bootstrap.min.js"></script>
 
+		<script type="text/javascript">
+       function searchthis(){    
+					var a = $('#searchtitle').val();
+					var d = {
+						'searchterms': a,
+						'searchables': []
+					};
+					d = JSON.stringify(d); 
+					$.ajax({
+									url: "http://wiki.rebirtharmitage.com:8085/search/", 
+									type: 'POST', 
+									data:d,
+									dataType: 'json',
+									async:false, 
+									success: function(data, result){
+										window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + data.title);
+									},
+									error: function(data, result){
+										alert("$(result)");
+									}});
+				}
+		</script>
       
     <script type="text/javascript">
 			res = function() {
@@ -114,6 +130,7 @@
 				var d = {
 						'uid':{{.Uid}},
 						'title': c[1].value,
+						'ctitle': {{.Ctitle}},
 						'parent':c[3].value,
 						'contentType': 0,
 						'content': nicEditors.findEditor('content').getContent(),
