@@ -12,6 +12,7 @@
     <title>Gokuwiki : {{.Ctitle}}</title>
 		<link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
     <link href="/css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/bootstrap.css" rel="stylesheet" media="screen">
     <link href="/css/basic.css" rel="stylesheet">
 	
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
@@ -21,228 +22,214 @@
 <body>
 
 	
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-								<div>
-									 <a class="navbar-brand" href="#">GokuWiki</a>
-								</div>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a href="#">Home</a>
-                    </li>
-                    <li>
-                        <a href="#">Management</a>
-                    </li>
-                    <li>
-                        <a href="#">Support</a>
-                    </li>
-                </ul>
-								<ul class="nav navbar-nav navbar-right">
-										<li>
-											<div class="vcenter">
-												<form name="searchform" id="searchform">
-													<input type="text" name="searchtitle" id="searchtitle">
-													<button onclick="searchthis()" class="btn btn-primary buffered " type="reset">Search</button>
-												</form>
-											</div>
-									</li>
-								</ul>
-            </div>
-        </div>
-    </nav>
-
-
-<div class="container">
-
-        <!-- Marketing Icons Section -->
-        <div class="row" id="container">
-            <div class="col-lg-12">
-                <h1 class="page-header">
-                    {{.Ctitle}}
-                </h1>
-            </div>
-					{{range .Nuerons}}
-            <div class="col-md-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h2><i class="fa fa-fw fa-check"></i>{{.Title}}</h2>
-                    </div>
-                    <div class="panel-body">
-                        <p>{{.Content}}</p>
-                        <a href="/editsmall/{{.Uid}}" class="btn btn-default">Edit</a>
-                    </div>
-                </div>
-            </div>
-					{{end}}
-        </div>
-	</div>
-	
-<div class="edit-container">		
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 		<div class="container">
-			<div class="row" ng-controller="Note">
-				<div class="col-lg-12">
-					<div class="col-lg-12">
-					<h1>Editing : {{.Ctitle}}</h1><button ng-click="res()" class="btn btn-primary buffered" type="submit">Save</button>		
-					</div>
-					<form><div class="col-md-4">
-						<div ng-repeat="node in nodes">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+						</button>
 						<div>
-							<h4>
-								Node Title
-							</h4>	
+							 <a class="navbar-brand" href="#">GokuWiki</a>
 						</div>
-						<div><input type="text" name="aname" ng-model="node.aname"></div>
-							<hr>
-						</div>
-					<div class="text-right">
-						<button ng-click="adda()" class="btn btn-primary buffered">Add Node</button>
-					</div>
-						</div>
-					<div class="col-md-4">
-						<div ng-repeat="tag in tags">
-						<div>
-							<h4>
-								Tag
-							</h4>	
-						</div>
-						<div><input type="text" name="bname" ng-model="tag.bname"></div>
-							<hr>
-						</div>
-						<div class="text-right">
-						<button ng-click="addb()" class="btn btn-primary buffered">Add Tag</button>
-					</div>
 				</div>
-			</form><form>
-						<div class="col-md-4">
-							<form>
-							<div ng-repeat="synapse in synapses">
-							<div>
-								<h4>
-									Synapse
-								</h4>	
-							</div>
-							<div><input type="text" name="cname" ng-model="synapse.cname"></div>
-								<hr>
-							</div>
-							<div class="text-right">
-							<button ng-click="addc()" class="btn btn-primary buffered">Add Synapse</button>
-						</div>
-					</div>
-						</form></div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+						<ul class="nav navbar-nav">
+								<li>
+										<a href="#">Home</a>
+								</li>
+								<li>
+										<a href="#">Management</a>
+								</li>
+								<li>
+										<a href="#">Support</a>
+								</li>
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+								<li>
+									<div class="vcenter">
+										<form name="searchform" id="searchform">
+											<input type="text" name="searchtitle" id="searchtitle">
+											<button onclick="searchthis()" class="btn btn-primary buffered " type="reset">Search</button>
+										</form>
+									</div>
+							</li>
+						</ul>
 				</div>
-				<div>
-					
-				</div>
-			</div>
-		</div> 
-	</div>
-        <!-- Page Content -->
+		</div>
+</nav>
 
-        <!-- /#page-content-wrapper -->
+    <div class="container">
+        <div class="row" id="container">
+					
+            <div class="col-md-9">
+                <hr>
+                <h1 class="page-header">{{.Ctitle}}<small>Text Article</small></h1>
+								
+                {{range .Nuerons}}
+									
+								<h2>{{.Title}}</h2>
+								<hr>
+							
+                <p><span class="glyphicon glyphicon-time"></span> {{.Title}}</p>
+                
+                <p>{{.Content}}</p>
+                
+								
+									<a class="btn btn-primary" href="/editsmall/{{.Uid}}">Edit <span class="glyphicon glyphicon-chevron-right"></span></a>
+								<hr>
+								{{end}}
+                
+            </div>
+
+            <!-- Blog Sidebar Widgets Column -->
+            <div class="col-md-3" id="container">
+
+                <!-- Blog Categories Well -->
+                <div class="well">
+                    <h4>Controls</h4>
+                    <div class="row" ng-controller="Note">
+                        <div class="col-lg-12">
+													<form><div>
+														<div ng-repeat="node in nodes">
+														<div>
+															<h4>
+																Node Title
+															</h4>	
+														</div>
+														<div><input type="text" name="aname" ng-model="node.aname"></div>
+															<hr>
+														</div>
+													<div class="text-right">
+														<button ng-click="adda()" class="btn btn-primary buffered">Add Node</button><button ng-click="res()" class="btn btn-primary buffered" type="submit">Submit</button>
+													</div>
+														</div>
+								
+
+                <!-- Side Widget Well -->
+                <div class="well">
+                    <h4>Side Widget Well</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, perspiciatis adipisci accusamus laudantium odit aliquam repellat tempore quos aspernatur vero.</p>
+                </div>
+
+            </div>
+
+        </div>
+        <!-- /.row -->
+
+        <hr>
+
+        <!-- Footer -->
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; Your Website 2014</p>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+        </footer>
 
     </div>
-    <!-- /#wrapper -->
+<!-- /#wrapper -->
 
-    <!-- jQuery -->
-    <script src="/js/jquery.js"></script>
+<!-- jQuery -->
+<script src="/js/jquery.js"></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="/js/bootstrap.min.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+function searchthis(){    
+	var a = $('#searchtitle').val();
+	var d = {
+		'searchterms': a,
+		'searchables': []
+	};
+	d = JSON.stringify(d); 
+	$.ajax({
+		url: "http://wiki.rebirtharmitage.com:8085/search/", 
+		type: 'POST', 
+		data:d,
+		dataType: 'json',
+		async:false, 
+		success: function(data, result){
+			alert(data.length);
+			if (data.length > 1){
+				alert("Multiples");
+				//window.location.href = ("http://wiki.rebirtharmitage.com:8085/results/" + data.title);
+			}else{
+				window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + data.title);
+			}
+		},
+		error: function(data, result){
+			alert("$(result)");
+		}});
+}
+</script>
 	
-		<script type="text/javascript">
-       function searchthis(){    
-					var a = $('#searchtitle').val();
-					var d = {
-						'searchterms': a,
-						'searchables': []
-					};
-					d = JSON.stringify(d); 
-					$.ajax({
-									url: "http://wiki.rebirtharmitage.com:8085/search/", 
-									type: 'POST', 
-									data:d,
-									dataType: 'json',
-									async:false, 
-									success: function(data, result){
-										window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + data.title);
-									},
-									error: function(data, result){
-										alert("$(result)");
-									}});
-				}
-		</script>
-	
-	<script type="text/javascript">
-        var Note = function($scope) {
-          $scope.nodes = [];
-          $scope.adda = function() {
-            if ($scope.nodes.length < 8) {
-              $scope.nodes.push({
-                aname: "",
-                content: ""
-              });
-            } else {
-              alert("Too many targets.")
-            }
-          }
-					
-					$scope.tags = [];
-          $scope.addb = function() {
-            if ($scope.tags.length < 8) {
-              $scope.tags.push({
-                bname: "",
-                content: ""
-              });
-            } else {
-              alert("Too many targets.")
-            }
-          }
-					
-					$scope.synapses = [];
-          $scope.addc = function() {
-            if ($scope.synapses.length < 8) {
-              $scope.synapses.push({
-                cname: "",
-                content: ""
-              });
-            } else {
-              alert("Too many targets.")
-            }
-          }
+<script type="text/javascript">
+	var Note = function($scope) {
+		$scope.nodes = [];
+		$scope.adda = function() {
+			if ($scope.nodes.length < 8) {
+				$scope.nodes.push({
+					aname: "",
+					content: ""
+				});
+			} else {
+				alert("Too many targets.")
+			}
+		}
 
-          $scope.res = function() {
-						for (var i = 0; i < $scope.nodes.length; i++){
-							var a = {{.Uid}} + i;
-							var d = {
-								'uid': a,
-								'title':$scope.nodes[i].aname,
-								'ctitle':{{.Ctitle}},
-								'parent':{{.Title}},
-								'contentType':$scope.nodes[i].contentType,
-								'content': $scope.nodes[i].content,
-								'tags' :[{{.Title}}],
-								'synapse' :[]
-							};
-							d = JSON.stringify(d); 
-							$.ajax({url: "http://wiki.rebirtharmitage.com:8085/process/", type: 'POST', data:d, async:false, success: function(data, result){}});
-						}
-						window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + {{.Title}});
-					}
-					
-					
-        }
-      </script>
+		$scope.tags = [];
+		$scope.addb = function() {
+			if ($scope.tags.length < 8) {
+				$scope.tags.push({
+					bname: "",
+					content: ""
+				});
+			} else {
+				alert("Too many targets.")
+			}
+		}
+
+		$scope.synapses = [];
+		$scope.addc = function() {
+			if ($scope.synapses.length < 8) {
+				$scope.synapses.push({
+					cname: "",
+					content: ""
+				});
+			} else {
+				alert("Too many targets.")
+			}
+		}
+
+		$scope.res = function() {
+			for (var i = 0; i < $scope.nodes.length; i++){
+				var a = {{.Uid}} + i;
+				var d = {
+					'uid': a,
+					'title':$scope.nodes[i].aname,
+					'ctitle':{{.Ctitle}},
+					'parent':{{.Title}},
+					'contentType':$scope.nodes[i].contentType,
+					'content': $scope.nodes[i].content,
+					'tags' :[{{.Title}}],
+					'synapse' :[]
+				};
+				d = JSON.stringify(d); 
+				$.ajax({url: "http://wiki.rebirtharmitage.com:8085/process/", type: 'POST', data:d, async:false, success: function(data, result){}});
+			}
+			window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + {{.Title}});
+		}
+	}
+</script>
 
 </body>
 

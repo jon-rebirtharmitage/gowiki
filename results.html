@@ -101,7 +101,11 @@
 									dataType: 'json',
 									async:false, 
 									success: function(data, result){
-										window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + data.title);
+										if data.length > 1 {
+											alert("Multiple results");
+										}else{
+											window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + data.title);	
+										}
 									},
 									error: function(data, result){
 										alert("$(result)");
@@ -109,66 +113,6 @@
 				}
 		</script>
 
-	<script type="text/javascript">
-        var Note = function($scope) {
-          $scope.nodes = [];
-          $scope.adda = function() {
-            if ($scope.nodes.length < 8) {
-              $scope.nodes.push({
-                aname: "",
-                content: ""
-              });
-            } else {
-              alert("Too many targets.")
-            }
-          }
-					
-					$scope.tags = [];
-          $scope.addb = function() {
-            if ($scope.tags.length < 8) {
-              $scope.tags.push({
-                bname: "",
-                content: ""
-              });
-            } else {
-              alert("Too many targets.")
-            }
-          }
-					
-					$scope.synapses = [];
-          $scope.addc = function() {
-            if ($scope.synapses.length < 8) {
-              $scope.synapses.push({
-                cname: "",
-                content: ""
-              });
-            } else {
-              alert("Too many targets.")
-            }
-          }
-
-          $scope.res = function() {
-						for (var i = 0; i < $scope.nodes.length; i++){
-							var a = {{.Uid}} + i;
-							var d = {
-								'uid': a,
-								'title':$scope.nodes[i].aname,
-								'ctitle':{{.Ctitle}},
-								'parent':{{.Title}},
-								'contentType':$scope.nodes[i].contentType,
-								'content': $scope.nodes[i].content,
-								'tags' :[{{.Title}}],
-								'synapse' :[]
-							};
-							d = JSON.stringify(d); 
-							$.ajax({url: "http://wiki.rebirtharmitage.com:8085/process/", type: 'POST', data:d, async:false, success: function(data, result){}});
-						}
-						window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + {{.Title}});
-					}
-					
-					
-        }
-      </script>
 </body>
 
 </html>

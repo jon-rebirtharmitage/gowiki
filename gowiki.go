@@ -144,6 +144,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		for i := range g[0].Synapse{
 			c = append(c, mongo_export(noaddr, g[0].Synapse[i]))
 		}
+		fmt.Println(g)
 		js, _ := json.Marshal(g[0])
 		w.Write(js)
 	}
@@ -167,6 +168,7 @@ func main() {
 	http.HandleFunc("/subprocess/", SmallSave)
 	http.HandleFunc("/", forwardHandler)
 	http.Handle("/css/",http.StripPrefix("/css/", http.FileServer(http.Dir("./css"))))
+	http.Handle("/fonts/",http.StripPrefix("/fonts/", http.FileServer(http.Dir("./fonts"))))
 	http.Handle("/js/",http.StripPrefix("/js/", http.FileServer(http.Dir("./js"))))
 	http.Handle("/img/",http.StripPrefix("/img/", http.FileServer(http.Dir("./img"))))
 	http.ListenAndServe(":8085", nil)
