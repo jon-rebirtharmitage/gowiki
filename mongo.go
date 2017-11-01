@@ -71,7 +71,7 @@ func mongo_multiexport(moaddress MOAddr, t int) []neuron {
 	defer session.Close()
 	c := session.DB(moaddress.table).C(moaddress.doc)
 	result := []neuron{}
-	iter := c.Find(bson.M{"uid": t}).Limit(100).Iter()
+	iter := c.Find(bson.M{"uid": t}).Limit(1000).Iter()
 	err = iter.All(&result)
 	if err != nil {
 			log.Fatal(err)
@@ -133,6 +133,22 @@ func mongo_locate(moaddress MOAddr, f int) []neuron {
 	c := session.DB(moaddress.table).C(moaddress.doc)
 	result := []neuron{}
 	iter := c.Find(bson.M{"uid": f}).Limit(100).Iter()
+	err = iter.All(&result)
+	if err != nil {
+			log.Fatal(err)
+	}
+	return result
+}
+
+func mongo_locateone(moaddress MOAddr, f int) neuron {
+	session, err := mgo.Dial(moaddress.session)
+	if err != nil {
+			panic(err)
+	}
+	defer session.Close()
+	c := session.DB(moaddress.table).C(moaddress.doc)
+	result := neuron{}
+	iter := c.Find(bson.M{"uid": f}).Limit(1).Iter()
 	err = iter.All(&result)
 	if err != nil {
 			log.Fatal(err)

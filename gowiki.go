@@ -5,6 +5,7 @@ import (
 	"net/http"
 //	"errors"
 	"fmt"
+	"time"
 	"strconv"
 	"strings"
 	"regexp"
@@ -18,6 +19,8 @@ type Page struct{
 	Uid int
 	Static int
 	Nuerons []neuron
+	Synapse []int
+	Timestamp time.Time
 }
 
 func loadPage(title string) (*Page, error) {
@@ -29,7 +32,7 @@ func loadPage(title string) (*Page, error) {
 		c = append(c, mongo_export(noaddr, a.Synapse[i]))
 	}
 	fmt.Println(a.Ctitle)
-	return &Page{title, a.Ctitle, a.Uid, 0, c}, nil
+	return &Page{title, a.Ctitle, a.Uid, 0, c, a.Synapse, a.Timestamp}, nil
 }
 
 func loadParadox(uid string) (*Page, error) {
@@ -37,7 +40,7 @@ func loadParadox(uid string) (*Page, error) {
 	u, _ := strconv.Atoi(uid)
 	a := mongo_locate(noaddr, u)
 	fmt.Println(a)
-	return &Page{"", a[0].Title, a[0].Uid, 0, a}, nil
+	return &Page{"", a[0].Title, a[0].Uid, 0, a, a[0].Synapse, a[0].Timestamp}, nil
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
@@ -59,7 +62,7 @@ func editsmallHandler(w http.ResponseWriter, r *http.Request, uid string) {
 	renderTemplate(w, "editsmall", p)
 }
 
-var templates = template.Must(template.ParseFiles("edit.html", "view.html", "editsmall.html"))
+var templates = template.Must(template.ParseFiles("edit.html", "view.html", "editsmall.html","results.html"))
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
@@ -92,10 +95,10 @@ func Save(w http.ResponseWriter, r *http.Request) {
 	var t neuron
 	json.Unmarshal(jsonData, &t)
 	f := mongo_find(moaddr, "LINDEX")
-	mongo_init(moaddr, axion{"LINDEX", "", (f.Uid+1), 0, nil})
+	mongo_init(moaddr, axion{"LINDEX", "", (f.Uid+1), 0, nil, time.Now()})
 	g := mongo_find(moaddr, t.Tags[0])
 	g.Synapse = append(g.Synapse, (f.Uid+1))
-	mongo_init(moaddr, axion{t.Tags[0], t.Ctitle,  g.Uid, 0, g.Synapse})
+	mongo_init(moaddr, axion{t.Tags[0], t.Ctitle,  g.Uid, 0, g.Synapse, time.Now()})
 	t.Uid = (f.Uid + 1)
 	t.Synapse = append(t.Synapse, t.Uid)
 	mongo_insert(noaddr, t)
@@ -108,7 +111,20 @@ func SmallSave(w http.ResponseWriter, r *http.Request) {
 	var jsonData = []byte(body)
 	var t neuron
 	json.Unmarshal(jsonData, &t)
+	t.Timestamp = time.Now()
 	mongo_update(noaddr, t)
+}
+
+func TagSave(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow- Origin", "*") 
+	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "hades"}
+	body, _ := ioutil.ReadAll(r.Body)
+	var jsonData = []byte(body)
+	var t neur
+	json.Unmarshal(jsonData, &t)
+	a := mongo_locateone(noaddr, t.Uid)
+	a.Tags = append(a.Tags, t.Tags)
+	mongo_update(noaddr, a)
 }
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
@@ -134,17 +150,23 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	if len(g) == 0 {
 		f := mongo_find(moaddr, "INDEX")
 		j := CreateSessionID()
-		mongo_init(moaddr, axion{"INDEX", "", (f.Uid+1), 0, nil})
-		k := axion{j, strings.ToLower(t.Searchterms), (f.Uid+1), 0, nil}
+		mongo_init(moaddr, axion{"INDEX", "", (f.Uid+1), 0, nil, time.Now()})
+		k := axion{j, strings.ToLower(t.Searchterms), (f.Uid+1), 0, nil, time.Now()}
 		mongo_insertAxion(moaddr, k)
 		js, _ := json.Marshal(k)
 		w.Write(js)
 	}else{
 		c := []neuron{}
-		for i := range g[0].Synapse{
-			c = append(c, mongo_export(noaddr, g[0].Synapse[i]))
+		for i := range g{
+			for j := range g[i].Synapse{
+				c = append(c, mongo_export(noaddr, g[i].Synapse[j]))	
+			}
 		}
-		fmt.Println(g)
+		fmt.Println(c)
+		//Go to new function for results page HERE
+		//====
+		
+		//====
 		js, _ := json.Marshal(g[0])
 		w.Write(js)
 	}
@@ -165,6 +187,7 @@ func main() {
 	http.HandleFunc("/editsmall/", makeHandler(editsmallHandler))
 	http.HandleFunc("/search/", searchHandler)
 	http.HandleFunc("/process/", Save)
+	http.HandleFunc("/tagprocess/", TagSave)
 	http.HandleFunc("/subprocess/", SmallSave)
 	http.HandleFunc("/", forwardHandler)
 	http.Handle("/css/",http.StripPrefix("/css/", http.FileServer(http.Dir("./css"))))

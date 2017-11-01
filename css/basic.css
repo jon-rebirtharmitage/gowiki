@@ -8,6 +8,14 @@
   margin-top: 20px;
 }
 
+.btn{
+  margin-right: 5px;
+}
+
+.well{
+  margin-top: 5px;
+}
+
 img {
   box-sizing: border-box;
   width: 100%;
@@ -39,10 +47,10 @@ img {
 }
 
 .vcenter {
-    height:55px;
-    display:table-cell;
+    margin-top: 5%;
+    display: inline-block;
+    height: 100%;
     vertical-align: middle;
-    float: none;
 }
 
 

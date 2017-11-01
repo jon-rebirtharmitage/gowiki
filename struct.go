@@ -27,6 +27,14 @@ type neuron struct{
 	Content template.HTML `json:"content"` 
   Tags []string					`json:"tags"` 
   Synapse []int					`json:"synapse"` 
+	Timestamp time.Time			`json:"timestamp"`
+}
+
+type neur struct{
+	Uid int								`json:"uid"` 
+	Title string					`json:"title"` 
+	Tags string						`json:"tag"`
+	Synapse int						`json:"synapse"`
 }
 
 type axion struct{
@@ -35,6 +43,7 @@ type axion struct{
 	Uid int						`json:"uid"`
 	Static int				`json:"static"`
   Synapse []int			`json:"synapse"`
+	Timestamp time.Time 	`json:"timestamp"`
 }	
 
 type search struct{

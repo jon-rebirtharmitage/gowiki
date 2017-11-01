@@ -1,3 +1,62 @@
+							
+<!-- <script type="text/javascript">
+	var Note = function($scope) {
+		$scope.tags = [];
+		$scope.addb = function() {
+			if ($scope.tags.length < 8) {
+				$scope.tags.push({
+					bname: "",
+					content: ""
+				});
+			} else {
+				alert("Too many targets.")
+			}
+		}
+
+		$scope.ret = function() {
+			for (var i = 0; i < $scope.tags.length; i++){
+				var a = {{.Uid}} + i;
+				var d = {
+					'uid': {{.Uid}},
+					'title':{{.CTitle}},
+					'tags' :$scope.tags[i].bname,
+					'synapse' :[]
+				};
+				d = JSON.stringify(d); 
+				$.ajax({url: "http://wiki.rebirtharmitage.com:8085/tagprocess/", type: 'POST', data:d, async:false, success: function(data, result){}});
+			}
+			window.location.href = ("http://wiki.rebirtharmitage.com:8085/editsmall/" + {{.Uid}});
+		}
+	}
+</script> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">

@@ -32,7 +32,7 @@
                     <span class="icon-bar"></span>
                 </button>
         <div>
-          <a class="navbar-brand" href="#">GokuWiki</a>
+          <a class="navbar-brand" href="#">Go-Wiki</a>
         </div>
       </div>
       <!-- Collect the nav links, forms, and other content for toggling -->
@@ -61,27 +61,33 @@
       </div>
     </div>
   </nav>
-  <div class="edit-container">
+	
+	
     <div class="container">
-      <div class="row" ng-controller="Note">
-        <div class="col-lg-12">
-          <div class="col-lg-12">
-            <h1>Editing : {{.Ctitle}}</h1><button ng-click="res()" class="btn btn-primary buffered" type="submit">Save</button>
-          </div>
-          <ul class="nav navbar-nav">
-          {{range .Nuerons}}
-          <li>
-            <a href="http://wiki.rebirtharmitage.com/view/{{.}}">Home</a>
-          </li>
-        </ul>
-      </div>
-      <div>
-
-      </div>
-    </div>
-  </div>
-  </div>
-
+        <div class="row" id="container">
+					
+            <div class="col-md-9">
+                <hr>
+                <h1 class="page-header">{{.Ctitle}}<small>{{.Timestamp}}</small></h1>
+						
+                {{range .Nuerons}}
+								<hr>
+								<div id="{{.Title}}">
+								<h3>{{.Title}}</h3>
+								<hr>
+							
+                <p><span class="glyphicon glyphicon-time"></span> {{.Timestamp}}</p>
+                
+                <p>{{.Content}}</p>
+                
+								
+									<a class="btn btn-primary text-right" href="/editsmall/{{.Uid}}">Edit <span class="glyphicon glyphicon-chevron-right"></span></a>
+								
+								</div>
+								{{end}}
+                
+            </div>
+				
   <script src="/js/jquery.js"></script>
 
   <script src="/js/bootstrap.min.js"></script>
@@ -102,7 +108,7 @@
 									async:false, 
 									success: function(data, result){
 										if data.length > 1 {
-											alert("Multiple results");
+											window.location.href = ("http://wiki.rebirtharmitage.com:8085/results/" + data.title);	
 										}else{
 											window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + data.title);	
 										}
