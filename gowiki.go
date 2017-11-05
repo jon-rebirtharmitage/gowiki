@@ -3,7 +3,6 @@ package main
 import (
 	"html/template"
 	"net/http"
-//	"errors"
 	"fmt"
 	"time"
 	"strconv"
@@ -21,6 +20,7 @@ type Page struct{
 	Nuerons []neuron
 	Synapse []int
 	Timestamp time.Time
+	TimestampDisplay string
 }
 
 func loadPage(title string) (*Page, error) {
@@ -32,7 +32,7 @@ func loadPage(title string) (*Page, error) {
 		c = append(c, mongo_export(noaddr, a.Synapse[i]))
 	}
 	fmt.Println(a.Ctitle)
-	return &Page{title, a.Ctitle, a.Uid, 0, c, a.Synapse, a.Timestamp}, nil
+	return &Page{title, a.Ctitle, a.Uid, 0, c, a.Synapse, a.Timestamp, a.TimestampDisplay}, nil
 }
 
 func loadParadox(uid string) (*Page, error) {
@@ -40,29 +40,76 @@ func loadParadox(uid string) (*Page, error) {
 	u, _ := strconv.Atoi(uid)
 	a := mongo_locate(noaddr, u)
 	fmt.Println(a)
-	return &Page{"", a[0].Title, a[0].Uid, 0, a, a[0].Synapse, a[0].Timestamp}, nil
+	return &Page{"", a[0].Title, a[0].Uid, 0, a, a[0].Synapse, a[0].Timestamp, a[0].TimestampDisplay}, nil
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
-	p, err := loadPage(title)
-	if err != nil {
-		http.Redirect(w, r, "/edit/" + title, http.StatusFound)
-		return
+	cookie, _ := r.Cookie("gowiki")
+	cookiea, _ := r.Cookie("gowiki-a")
+	if CheckLogin(cookie, cookiea) {
+		p, err := loadPage(title)
+		if err != nil {
+			http.Redirect(w, r, "/edit/" + title, http.StatusFound)
+			return
+		}
+		renderTemplate(w, "view", p)
+	}else{
+		http.Redirect(w, r, "/login", http.StatusFound)
 	}
-	renderTemplate(w, "view", p)
 }
 
 func editHandler(w http.ResponseWriter, r *http.Request, title string) {
-	p, _ := loadPage(title)
-	renderTemplate(w, "edit", p)
+	cookie, _ := r.Cookie("gowiki")
+	cookiea, _ := r.Cookie("gowiki-a")
+	if CheckLogin(cookie, cookiea) {
+		p, _ := loadPage(title)
+		renderTemplate(w, "edit", p)
+	} else {
+		http.Redirect(w, r, "/login", http.StatusFound)
+	}
 }
 
 func editsmallHandler(w http.ResponseWriter, r *http.Request, uid string) {
-	p, _ := loadParadox(uid)
-	renderTemplate(w, "editsmall", p)
+	cookie, _ := r.Cookie("gowiki")
+	cookiea, _ := r.Cookie("gowiki-a")
+	if CheckLogin(cookie, cookiea) {
+		p, _ := loadParadox(uid)
+		renderTemplate(w, "editsmall", p)
+	} else {
+		http.Redirect(w, r, "/login", http.StatusFound)
+	}
 }
 
-var templates = template.Must(template.ParseFiles("edit.html", "view.html", "editsmall.html","results.html"))
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	p, _ := loadPage("gowiki")
+	renderTemplate(w, "login", p)
+}
+
+func loginAttempt(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow- Origin", "*") 
+	w.Header().Set("Content-Type", "application/json")
+	body, _ := ioutil.ReadAll(r.Body)
+	var jsonData = []byte(body)
+	var t Login
+	json.Unmarshal(jsonData, &t)
+	moaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "hermes"}
+	f := mongo_login(moaddr, t.Username)
+	if decrypt(f.Password) == t.Password{
+		v := CreateSessionID()
+		expiration := time.Now().Add(365 * 24 * time.Hour)
+		cookie := http.Cookie{Name: "gowiki", Value: v, Path: "/",Expires: expiration}
+    http.SetCookie(w, &cookie)
+		cookiea := http.Cookie{Name: "gowiki-a", Value: encrypt(t.Username), Path: "/",Expires: expiration}
+    http.SetCookie(w, &cookiea)
+		mongo_loginSuccess(moaddr, Login{t.Username, f.Password, v})
+		http.Redirect(w, r, "/view/gowiki", http.StatusFound)
+	} else {
+		http.Redirect(w, r, "/login/", http.StatusFound)
+	}
+}
+
+
+var templates = template.Must(template.ParseFiles("edit.html", "view.html", "editsmall.html","results.html", "login.html"))
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
@@ -84,6 +131,21 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 	}
 }
 
+func CheckLogin(check *http.Cookie, checka *http.Cookie) bool{
+	if check == nil || checka == nil {
+		return false
+	} else {
+		moaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "hermes"}
+		f := mongo_login(moaddr, decrypt(checka.Value))
+		if f.Auth == check.Value{
+			return true
+		} else {
+			return false
+		}
+		return true
+	}
+}
+
 func Save(w http.ResponseWriter, r *http.Request) {
 	//Allows the call to the RESTFUL API to come from across domains
 	w.Header().Set("Access-Control-Allow- Origin", "*") 
@@ -95,10 +157,10 @@ func Save(w http.ResponseWriter, r *http.Request) {
 	var t neuron
 	json.Unmarshal(jsonData, &t)
 	f := mongo_find(moaddr, "LINDEX")
-	mongo_init(moaddr, axion{"LINDEX", "", (f.Uid+1), 0, nil, time.Now()})
+	mongo_init(moaddr, axion{"LINDEX", "", (f.Uid+1), 0, nil, time.Now(), ""})
 	g := mongo_find(moaddr, t.Tags[0])
 	g.Synapse = append(g.Synapse, (f.Uid+1))
-	mongo_init(moaddr, axion{t.Tags[0], t.Ctitle,  g.Uid, 0, g.Synapse, time.Now()})
+	mongo_init(moaddr, axion{t.Tags[0], t.Ctitle,  g.Uid, 0, g.Synapse, time.Now(), ""})
 	t.Uid = (f.Uid + 1)
 	t.Synapse = append(t.Synapse, t.Uid)
 	mongo_insert(noaddr, t)
@@ -112,6 +174,7 @@ func SmallSave(w http.ResponseWriter, r *http.Request) {
 	var t neuron
 	json.Unmarshal(jsonData, &t)
 	t.Timestamp = time.Now()
+	t.TimestampDisplay = t.Timestamp.Format("Mon Jan _2 15:04:05 2006")
 	mongo_update(noaddr, t)
 }
 
@@ -150,8 +213,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	if len(g) == 0 {
 		f := mongo_find(moaddr, "INDEX")
 		j := CreateSessionID()
-		mongo_init(moaddr, axion{"INDEX", "", (f.Uid+1), 0, nil, time.Now()})
-		k := axion{j, strings.ToLower(t.Searchterms), (f.Uid+1), 0, nil, time.Now()}
+		mongo_init(moaddr, axion{"INDEX", "", (f.Uid+1), 0, nil, time.Now(), ""})
+		k := axion{j, strings.ToLower(t.Searchterms), (f.Uid+1), 0, nil, time.Now(), ""}
 		mongo_insertAxion(moaddr, k)
 		js, _ := json.Marshal(k)
 		w.Write(js)
@@ -173,12 +236,22 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func forwardHandler(w http.ResponseWriter, r *http.Request){
-	a := strings.Split(r.URL.String(), "/")
-	if a[1] == "" {
-		http.Redirect(w, r, "/view/" + "gowiki", http.StatusFound)
-	}else{
-		http.Redirect(w, r, "/view/" + a[1], http.StatusFound)	
+	cookie, _ := r.Cookie("gowiki")
+	if cookie == nil {
+		http.Redirect(w, r, "/login", http.StatusFound)
+	} else{
+		if cookie.Name == "true" {
+			a := strings.Split(r.URL.String(), "/")
+			if a[1] == "" {
+				http.Redirect(w, r, "/view/" + "gowiki", http.StatusFound)
+			}else{
+				http.Redirect(w, r, "/view/" + a[1], http.StatusFound)	
+			}
+		} else {
+			http.Redirect(w, r, "/login", http.StatusFound)
+		}
 	}
+
 }
 
 func main() {
@@ -189,6 +262,8 @@ func main() {
 	http.HandleFunc("/process/", Save)
 	http.HandleFunc("/tagprocess/", TagSave)
 	http.HandleFunc("/subprocess/", SmallSave)
+	http.HandleFunc("/login/", loginHandler)
+	http.HandleFunc("/loginAttempt/", loginAttempt)
 	http.HandleFunc("/", forwardHandler)
 	http.Handle("/css/",http.StripPrefix("/css/", http.FileServer(http.Dir("./css"))))
 	http.Handle("/fonts/",http.StripPrefix("/fonts/", http.FileServer(http.Dir("./fonts"))))

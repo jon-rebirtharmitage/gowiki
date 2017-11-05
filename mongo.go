@@ -166,3 +166,29 @@ func mongo_update(moaddress MOAddr, t neuron) bool{
   c.Update(bson.M{"uid": t.Uid}, t)
   return true
 }
+
+func mongo_login(moaddress MOAddr, f string) Login {
+	session, err := mgo.Dial(moaddress.session)
+	if err != nil {
+			panic(err)
+	}
+	defer session.Close()
+	c := session.DB(moaddress.table).C(moaddress.doc)
+	result := Login{}
+	erro := c.Find(bson.M{"username": f}).One(&result)
+	if erro != nil {
+			return result
+	}
+	return result
+}
+
+func mongo_loginSuccess(moaddress MOAddr, login Login) bool {
+  session, err := mgo.Dial(moaddress.session)
+  if err != nil {
+    return false
+  }
+  defer session.Close()
+  c := session.DB(moaddress.table).C(moaddress.doc)
+  c.Update(bson.M{"username": login.Username}, login)
+  return true
+}
