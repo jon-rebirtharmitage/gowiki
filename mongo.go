@@ -34,6 +34,20 @@ func mongo_insertAxion(moaddress MOAddr, t axion) bool{
 	return true
 }
 
+func mongo_insertRelate(moaddress MOAddr, t related) bool{
+  session, err := mgo.Dial(moaddress.session)
+  if err != nil {
+    return false
+  }
+  defer session.Close()
+  c := session.DB(moaddress.table).C(moaddress.doc)
+  c.Insert(t)
+	if err != nil{
+		return false
+	}
+	return true
+}
+
 func mongo_init(moaddress MOAddr, t axion) bool{
   session, err := mgo.Dial(moaddress.session)
   if err != nil {
@@ -58,7 +72,7 @@ func mongo_export(moaddress MOAddr, t int) neuron {
 	result := neuron{}
 	erro := c.Find(bson.M{"uid": t}).One(&result)
 	if erro != nil {
-			log.Fatal(erro)
+		log.Fatal(erro)
 	}
 	return result
 }
@@ -191,4 +205,19 @@ func mongo_loginSuccess(moaddress MOAddr, login Login) bool {
   c := session.DB(moaddress.table).C(moaddress.doc)
   c.Update(bson.M{"username": login.Username}, login)
   return true
+}
+
+func mongo_findRelate(moaddress MOAddr, f string) related {
+	session, err := mgo.Dial(moaddress.session)
+	if err != nil {
+			panic(err)
+	}
+	defer session.Close()
+	c := session.DB(moaddress.table).C(moaddress.doc)
+	result := related{}
+	erro := c.Find(bson.M{"uid": f}).One(&result)
+	if erro != nil {
+			return result
+	}
+	return result
 }

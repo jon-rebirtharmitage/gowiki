@@ -34,7 +34,7 @@
 								<span class="icon-bar"></span>
 						</button>
 						<div>
-							 <a class="navbar-brand" href="#">GokuWiki</a>
+							 <a class="navbar-brand" href="#">GoWiki</a>
 						</div>
 				</div>
 				<!-- Collect the nav links, forms, and other content for toggling -->
@@ -96,16 +96,16 @@
 			};
 			d = JSON.stringify(d); 
 			$.ajax({
-				url: "http://wiki.rebirtharmitage.com:8085/search/", 
+				url: "https://wiki.rebirtharmitage.com:8085/search/", 
 				type: 'POST', 
 				data:d,
 				dataType: 'json',
 				async:false, 
 				success: function(data, result){
 					if (data.length > 1){
-						window.location.href = ("http://wiki.rebirtharmitage.com:8085/results/" + data.title);
+						window.location.href = ("https://wiki.rebirtharmitage.com:8085/results/" + data.title);
 					}else{
-						window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + data.title);
+						window.location.href = ("https://wiki.rebirtharmitage.com:8085/view/" + data.title);
 					}
 				},
 				error: function(data, result){
@@ -122,8 +122,8 @@
 						'password': c[2].value
 				}
 				d = JSON.stringify(d);
-				$.post(("http://wiki.rebirtharmitage.com:8085/loginAttempt/"), d, function(data, status) {
-							window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/gokuwiki");
+				$.post(("https://wiki.rebirtharmitage.com:8085/loginAttempt/"), d, function(data, status) {
+							window.location.href = ("https://wiki.rebirtharmitage.com:8085/view/gokuwiki");
 				});	
 			}
       </script>

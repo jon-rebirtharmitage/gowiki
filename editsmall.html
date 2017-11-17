@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Gokuwiki : {{range .Nuerons}} {{.Title}} {{end}}</title>
+    <title>Gowiki : {{range .Nuerons}} {{.Title}} {{end}}</title>
 		<link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
     <link href="/css/bootstrap.min.css" rel="stylesheet">
 		<link href="/css/bootstrap.css" rel="stylesheet" media="screen">
@@ -34,7 +34,7 @@
                     <span class="icon-bar"></span>
                 </button>
 								<div>
-									 <a class="navbar-brand" href="#">GokuWiki</a>
+									 <a class="navbar-brand" href="#">GoWiki</a>
 								</div>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -120,13 +120,13 @@
 					};
 					d = JSON.stringify(d); 
 					$.ajax({
-							url: "http://wiki.rebirtharmitage.com:8085/search/", 
+							url: "https://wiki.rebirtharmitage.com:8085/search/", 
 							type: 'POST', 
 							data:d,
 							dataType: 'json',
 							async:false, 
 							success: function(data, result){
-								window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + data.title);
+								window.location.href = ("https://wiki.rebirtharmitage.com:8085/view/" + data.title);
 							},
 							error: function(data, result){
 								alert("$(result)");
@@ -148,14 +148,14 @@
 						'synapse' :[]
 				}
 				d = JSON.stringify(d);
-				$.post(("http://wiki.rebirtharmitage.com:8085/subprocess/"), d, function(data, status) {
-							window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + c[3].value);
+				$.post(("https://wiki.rebirtharmitage.com:8085/subprocess/"), d, function(data, status) {
+							window.location.href = ("https://wiki.rebirtharmitage.com:8085/view/" + c[3].value);
 				});	
 			}
       </script>
 
 </body>
- 		<script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script> <script type="text/javascript">
+ 		<script type="text/javascript" src="/js/nicEdit-Latest.js"></script> <script type="text/javascript">
 		//<![CDATA[
         bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
 		//]]>

@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Gokuwiki : {{.Ctitle}}</title>
+    <title>Gowiki : {{.Ctitle}}</title>
 		<link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
 
     <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -32,7 +32,7 @@
                     <span class="icon-bar"></span>
                 </button>
 								<div>
-									 <a class="navbar-brand" href="#">GokuWiki</a>
+									 <a class="navbar-brand" href="#">GoWiki</a>
 								</div>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -136,13 +136,13 @@
 				};
 				d = JSON.stringify(d); 
 				$.ajax({
-								url: "http://wiki.rebirtharmitage.com:8085/search/", 
+								url: "https://wiki.rebirtharmitage.com:8085/search/", 
 								type: 'POST', 
 								data:d,
 								dataType: 'json',
 								async:false, 
 								success: function(data, result){
-									window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + data.title);
+									window.location.href = ("https://wiki.rebirtharmitage.com:8085/view/" + data.title);
 								},
 								error: function(data, result){
 									alert("$(result)");
@@ -202,9 +202,9 @@
 							'synapse' :[]
 						};
 						d = JSON.stringify(d); 
-						$.ajax({url: "http://wiki.rebirtharmitage.com:8085/process/", type: 'POST', data:d, async:false, success: function(data, result){}});
+						$.ajax({url: "https://wiki.rebirtharmitage.com:8085/process/", type: 'POST', data:d, async:false, success: function(data, result){}});
 					}
-					window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + {{.Title}});
+					window.location.href = ("https://wiki.rebirtharmitage.com:8085/view/" + {{.Title}});
 				}
 			}
 		</script>

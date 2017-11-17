@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Gokuwiki : {{.Ctitle}}</title>
+  <title>Gowiki : Search of {{.Title}}</title>
   <link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
 
   <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -32,7 +32,7 @@
                     <span class="icon-bar"></span>
                 </button>
         <div>
-          <a class="navbar-brand" href="#">Go-Wiki</a>
+          <a class="navbar-brand" href="#">GoWiki</a>
         </div>
       </div>
       <!-- Collect the nav links, forms, and other content for toggling -->
@@ -68,24 +68,18 @@
 					
             <div class="col-md-9">
                 <hr>
-                <h1 class="page-header">{{.Ctitle}}<small>{{.Timestamp}}</small></h1>
+                <h1 class="page-header">Search Result : {{.Title}}<small></small></h1>
 						
-                {{range .Nuerons}}
+ 								{{range .Nuerons}}
 								<hr>
 								<div id="{{.Title}}">
-								<h3>{{.Title}}</h3>
+									<h3><a href="https://wiki.rebirtharmitage.com:8085/view/{{.Parent}}">{{.Ctitle}}</a></h3>
 								<hr>
-							
-                <p><span class="glyphicon glyphicon-time"></span> {{.Timestamp}}</p>
-                
-                <p>{{.Content}}</p>
-                
 								
-									<a class="btn btn-primary text-right" href="/editsmall/{{.Uid}}">Edit <span class="glyphicon glyphicon-chevron-right"></span></a>
-								
-								</div>
+									
+                <p><span class="glyphicon glyphicon-time"></span>{{.Timestamp}}</p>
 								{{end}}
-                
+								</div>                
             </div>
 				
   <script src="/js/jquery.js"></script>
@@ -101,16 +95,16 @@
 					};
 					d = JSON.stringify(d); 
 					$.ajax({
-									url: "http://wiki.rebirtharmitage.com:8085/search/", 
+									url: "https://wiki.rebirtharmitage.com:8085/search/", 
 									type: 'POST', 
 									data:d,
 									dataType: 'json',
 									async:false, 
 									success: function(data, result){
 										if data.length > 1 {
-											window.location.href = ("http://wiki.rebirtharmitage.com:8085/results/" + data.title);	
+											window.location.href = ("https://wiki.rebirtharmitage.com:8085/results/" + data.title);	
 										}else{
-											window.location.href = ("http://wiki.rebirtharmitage.com:8085/view/" + data.title);	
+											window.location.href = ("https://wiki.rebirtharmitage.com:8085/view/" + data.title);	
 										}
 									},
 									error: function(data, result){

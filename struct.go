@@ -48,6 +48,17 @@ type axion struct{
 	TimestampDisplay string	`json:"timestampdisplay"`
 }	
 
+type relate struct{
+	Uids int		`json:"uids"`
+}
+
+type related struct{
+	Uids []int		`json:"uids"`
+	Links []string	`json:"links"`
+	Title string	`json:"title"`
+	Uid string		`json:"uid"`
+}
+
 type search struct{
 	Searchterms string		`json:"searchterms"`
 	Searchables []string	`json:"searchables"`

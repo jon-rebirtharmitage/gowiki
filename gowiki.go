@@ -31,8 +31,28 @@ func loadPage(title string) (*Page, error) {
 	for i := range a.Synapse{
 		c = append(c, mongo_export(noaddr, a.Synapse[i]))
 	}
-	fmt.Println(a.Ctitle)
 	return &Page{title, a.Ctitle, a.Uid, 0, c, a.Synapse, a.Timestamp, a.TimestampDisplay}, nil
+}
+
+func loadResult(title string) (*Page, error) {
+	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "olympus"}
+	moaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "hades"}
+	a := mongo_findRelate(noaddr, title)
+	c := []neuron{}
+	t := false
+	for i := range a.Uids{
+		if a.Uids[i] == 0 {}else{
+			fmt.Println(c)
+			c = append(c, mongo_export(moaddr, a.Uids[i]))
+			t = true
+		}
+	}
+	if t {
+		return &Page{a.Title, a.Title, 1, 0, c, nil, time.Now(), ""}, nil
+	} else {
+		return &Page{a.Title, a.Title, 1, 0, nil, nil, time.Now(), ""}, nil
+	}
+	
 }
 
 func loadParadox(uid string) (*Page, error) {
@@ -80,6 +100,18 @@ func editsmallHandler(w http.ResponseWriter, r *http.Request, uid string) {
 	}
 }
 
+func resultsHandler(w http.ResponseWriter, r *http.Request, title string){
+	cookie, _ := r.Cookie("gowiki")
+	cookiea, _ := r.Cookie("gowiki-a")
+	if CheckLogin(cookie, cookiea) {
+		fmt.Println(title)
+		p, _ := loadResult(title)
+		renderTemplate(w, "results", p)
+	} else {
+		http.Redirect(w, r, "/login", http.StatusFound)
+	}
+}
+
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	p, _ := loadPage("gowiki")
 	renderTemplate(w, "login", p)
@@ -118,7 +150,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	}
 }
 
-var validPath = regexp.MustCompile("^/(edit|editsmall|view)/([a-zA-Z0-9]+)$")
+var validPath = regexp.MustCompile("^/(edit|editsmall|view|results)/([a-zA-Z0-9]+)$")
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -198,18 +230,18 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	var t search
 	json.Unmarshal(jsonData, &t)
 	moaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "pantheon"}
-	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "hades"}
+	hoaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "hades"}
+	noaddr := MOAddr{"vps.rebirtharmitage.com:21701", "gowiki", "olympus"}
 	t.Searchterms = strings.ToLower(t.Searchterms)
 	t.Searchables = strings.Split(t.Searchterms, " ")
 	g := []axion{}
 	h := []axion{}
 	for i := range t.Searchables{
-		h = mongo_seekfind(moaddr, string(t.Searchables[i]))
+		h = mongo_seekfind(hoaddr, string(t.Searchables[i]))
 		for j := range h {
 			g = append(g, h[j])
 		}
 	}
-	fmt.Println(t.Searchterms)
 	if len(g) == 0 {
 		f := mongo_find(moaddr, "INDEX")
 		j := CreateSessionID()
@@ -219,18 +251,16 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		js, _ := json.Marshal(k)
 		w.Write(js)
 	}else{
-		c := []neuron{}
+		j := CreateSessionID()
+		c := make([]int, 1)
 		for i := range g{
 			for j := range g[i].Synapse{
-				c = append(c, mongo_export(noaddr, g[i].Synapse[j]))	
+				c = append(c, g[i].Synapse[j])	
 			}
 		}
-		fmt.Println(c)
-		//Go to new function for results page HERE
-		//====
-		
-		//====
-		js, _ := json.Marshal(g[0])
+		d := related{c, nil, t.Searchterms, j}
+		mongo_insertRelate(noaddr, d)
+		js, _ := json.Marshal(d)
 		w.Write(js)
 	}
 }
@@ -264,10 +294,11 @@ func main() {
 	http.HandleFunc("/subprocess/", SmallSave)
 	http.HandleFunc("/login/", loginHandler)
 	http.HandleFunc("/loginAttempt/", loginAttempt)
+	http.HandleFunc("/results/", makeHandler(resultsHandler))
 	http.HandleFunc("/", forwardHandler)
 	http.Handle("/css/",http.StripPrefix("/css/", http.FileServer(http.Dir("./css"))))
 	http.Handle("/fonts/",http.StripPrefix("/fonts/", http.FileServer(http.Dir("./fonts"))))
 	http.Handle("/js/",http.StripPrefix("/js/", http.FileServer(http.Dir("./js"))))
 	http.Handle("/img/",http.StripPrefix("/img/", http.FileServer(http.Dir("./img"))))
-	http.ListenAndServe(":8085", nil)
+	http.ListenAndServeTLS(":8085", "cert.pem", "privkey.pem", nil)
 }
